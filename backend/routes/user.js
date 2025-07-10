@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, getAllUsers, getUserById, updateUser, deleteUser } from "../controllers/userController.js";
+import { register, login, getAllUsers, getUserById, updateUser, deleteUser, getUserRoleCounts } from "../controllers/userController.js";
 import { verifyToken } from "../middleware/verifytoken.js";
 
 const router = express.Router();
@@ -14,6 +14,7 @@ const router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
 router.get("/", getAllUsers);
+router.get("/role-counts", getUserRoleCounts);
 router.get("/:id", getUserById);
 router.put("/:id", updateUser);
 router.delete("/:id", deleteUser);

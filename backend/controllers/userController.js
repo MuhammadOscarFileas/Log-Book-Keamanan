@@ -7,9 +7,9 @@ const JWT_EXPIRES_IN = "1d"; // 1 hari
 
 export const register = async (req, res) => {
   try {
-    const { nomor_pegawai, nama_lengkap, email, password, lokasi, role } = req.body;
+    const { nama_lengkap, email, password, lokasi, role } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await UserModel.create({ nomor_pegawai, nama_lengkap, email, password: hashedPassword, lokasi, role });
+    const user = await UserModel.create({ nama_lengkap, email, password: hashedPassword, lokasi, role });
     res.status(201).json(user);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -69,6 +69,21 @@ export const deleteUser = async (req, res) => {
     const deleted = await UserModel.destroy({ where: { user_id: req.params.id } });
     if (!deleted) return res.status(404).json({ error: "User not found" });
     res.json({ message: "User deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getUserRoleCounts = async (req, res) => {
+  try {
+    const users = await UserModel.findAll();
+    const counts = { officer: 0, supervisor: 0, superadmin: 0 };
+    users.forEach(u => {
+      if (u.role === 'officer') counts.officer++;
+      if (u.role === 'supervisor') counts.supervisor++;
+      if (u.role === 'superadmin') counts.superadmin++;
+    });
+    res.json(counts);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

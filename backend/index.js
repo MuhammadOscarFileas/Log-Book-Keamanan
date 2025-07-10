@@ -7,7 +7,6 @@ import db from "./config/database.js";
 import userRoutes from "./routes/user.js";
 import laporanRoutes from "./routes/laporan.js";
 import kegiatanRoutes from "./routes/kegiatan.js";
-import inventarisRoutes from "./routes/inventaris.js";
 import inventarisInputRoutes from "./routes/inventarisInput.js";
 
 // Import relasi antar model jika ada (opsional)
@@ -19,16 +18,18 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware global
 app.use(cors({
-  origin: ["http://localhost:3000"], // ganti sesuai frontend
+  origin: ['http://localhost:3000', 'https://ad0d4e758a12.ngrok-free.app', 'https://w50hv1z0-3000.asse.devtunnels.ms'],
   credentials: true
 }));
+
+ // izinkan semua origin, cocok untuk testing
+
 app.use(express.json());
 
 // Daftarkan semua route API
-app.use("/api/user", userRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/laporan", laporanRoutes);
 app.use("/api/kegiatan", kegiatanRoutes);
-app.use("/api/inventaris", inventarisRoutes);
 app.use("/api/inventaris-input", inventarisInputRoutes);
 
 // Root path

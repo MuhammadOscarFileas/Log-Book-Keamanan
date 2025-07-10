@@ -12,11 +12,11 @@ const LaporanModel = db.define("laporan", {
     allowNull: false,
   },
   lokasi: {
-    type: DataTypes.ENUM("lokasi1", "lokasi2"), // sesuaikan daftar lokasi
+    type: DataTypes.STRING, // sesuaikan daftar lokasi
     allowNull: false,
   },
   pos: {
-    type: DataTypes.ENUM("pos1", "pos2"), // sesuaikan daftar pos
+    type: DataTypes.STRING, // sesuaikan daftar pos
     allowNull: false,
   },
   shift: {

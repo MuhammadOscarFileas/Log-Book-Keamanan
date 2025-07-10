@@ -11,8 +11,8 @@ const InventarisInput = db.define("inventaris_input", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  inventaris_id: {
-    type: DataTypes.INTEGER,
+  nama_barang: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
   jumlah: {

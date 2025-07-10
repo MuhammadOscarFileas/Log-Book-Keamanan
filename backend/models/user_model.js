@@ -8,10 +8,6 @@ const UserModel = db.define("users", {
     allowNull: false,
     autoIncrement: true
   },
-  nomor_pegawai: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
   nama_lengkap: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -32,6 +28,10 @@ const UserModel = db.define("users", {
     type: DataTypes.ENUM("superadmin", "supervisor", "officer"),
     allowNull: false,
   },
+  first_login: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true, // Artinya belum pernah login
+  }
 }, {
   timestamps: true,
   createdAt: "created_at",
