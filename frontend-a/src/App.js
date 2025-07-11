@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import DashboardSuperadmin from './pages/DashboardSuperadmin';
@@ -9,6 +9,7 @@ import ManageAkun from './pages/ManageAkun';
 import MonitorLaporan from './pages/MonitorLaporan';
 import { getApiUrl, API_CONFIG } from './config';
 import Swal from 'sweetalert2';
+import { isMobile } from './mobilepages/MobileLogin';
 
 function LoginCard({ onForget, onLogin }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -136,6 +137,21 @@ const OfficerLaporanForm = React.lazy(() => import('./pages/OfficerLaporanForm')
 const OfficerLaporanList = React.lazy(() => import('./pages/OfficerLaporanList'));
 
 function App() {
+  // Deteksi mobile di awal render, simpan di state
+  const [mobile, setMobile] = useState(() => isMobile());
+
+  useEffect(() => {
+    // Update jika window di-resize (optional, agar dinamis)
+    const handleResize = () => setMobile(isMobile());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Simpan ke localStorage/sessionStorage jika ingin diakses global
+  useEffect(() => {
+    window.localStorage.setItem('isMobile', mobile ? '1' : '0');
+  }, [mobile]);
+
   return (
     <Routes>
       <Route path="/" element={<WelcomeLogin />} />

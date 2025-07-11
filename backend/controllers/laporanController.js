@@ -13,7 +13,7 @@ export const createLaporan = async (req, res) => {
 export const getAllLaporan = async (req, res) => {
   try {
     const laporan = await LaporanModel.findAll();
-    res.json(laporan);
+    res.json(laporan); 
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
