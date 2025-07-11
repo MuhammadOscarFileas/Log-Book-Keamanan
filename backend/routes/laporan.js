@@ -1,5 +1,5 @@
 import express from "express";
-import { createLaporan, getAllLaporan, getLaporanById, updateLaporan, deleteLaporan } from "../controllers/laporanController.js";
+import { createLaporan, getAllLaporan, getLaporanById, updateLaporan, deleteLaporan, getLaporanNonDraft } from "../controllers/laporanController.js";
 import { verifyToken } from "../middleware/verifytoken.js";
 
 const router = express.Router();
@@ -12,6 +12,7 @@ const router = express.Router();
 
 router.post("/", createLaporan);
 router.get("/", getAllLaporan);
+router.get("/non-draft", getLaporanNonDraft);
 router.get("/:id", getLaporanById);
 router.patch("/:id", updateLaporan);
 router.delete("/:id", deleteLaporan);

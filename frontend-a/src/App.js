@@ -6,8 +6,9 @@ import DashboardSupervisor from './pages/DashboardSupervisor';
 import DashboardOfficer from './pages/DashboardOfficer';
 import NotFound from './pages/NotFound';
 import ManageAkun from './pages/ManageAkun';
-
-const BASE_URL = "https://ad0d4e758a12.ngrok-free.app";
+import MonitorLaporan from './pages/MonitorLaporan';
+import { getApiUrl, API_CONFIG } from './config';
+import Swal from 'sweetalert2';
 
 function LoginCard({ onForget, onLogin }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,7 +20,7 @@ function LoginCard({ onForget, onLogin }) {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch(`${BASE_URL}/api/users/login`, {
+      const res = await fetch(getApiUrl(API_CONFIG.API_ENDPOINTS.LOGIN), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -88,14 +89,19 @@ function WelcomeLogin() {
   };
 
   const handleForget = () => {
-    setShowLogin(false);
-    setTimeout(() => setSwipe(false), 10);
+    Swal.fire({
+      icon: 'info',
+      title: 'Lupa Password?',
+      text: 'Silahkan menghubungi unit Operation & Services jika anda lupa password.',
+      confirmButtonText: 'OK'
+    });
   };
 
   // Login: redirect ke dashboard sesuai role
   const handleLogin = (user) => {
     if (!user || !user.role) return;
-    // Simpan nama lengkap ke localStorage untuk sidebar
+    // Simpan seluruh user ke localStorage
+    localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('nama_lengkap', user.nama_lengkap || 'User');
     if (user.role === "superadmin") navigate("/dashboard-superadmin");
     else if (user.role === "supervisor") navigate("/dashboard-supervisor");
@@ -137,6 +143,7 @@ function App() {
       <Route path="/dashboard-supervisor" element={<DashboardSupervisor />} />
       <Route path="/dashboard-officer" element={<DashboardOfficer />} />
       <Route path="/manage-akun" element={<ManageAkun />} />
+      <Route path="/monitor-laporan" element={<MonitorLaporan />} />
       <Route path="/officer" element={<DashboardOfficer />} />
       <Route path="/officer/laporan" element={<React.Suspense fallback={<div>Loading...</div>}><OfficerLaporanList /></React.Suspense>} />
       <Route path="/officer/laporan/buat" element={<React.Suspense fallback={<div>Loading...</div>}><OfficerLaporanForm mode="create" /></React.Suspense>} />

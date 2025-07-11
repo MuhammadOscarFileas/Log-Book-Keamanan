@@ -2,22 +2,28 @@ import React, { useEffect, useState } from 'react';
 import '../App.css';
 import LogoSVG from '../logo.svg';
 import Sidebar from '../Sidebar';
-
-const BASE_URL = "https://ad0d4e758a12.ngrok-free.app";
+import { getApiUrl, API_CONFIG } from '../config';
+import toast from 'react-hot-toast';
 
 export default function DashboardSuperadmin() {
   const [userCounts, setUserCounts] = useState({ officer: 0, supervisor: 0 });
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
-    fetch(`${BASE_URL}/api/users/role-counts`, {
-      credentials: 'include'
-    })
-      .then(res => res.json())
-      .then(data => {
-        setUserCounts({ officer: data.officer || 0, supervisor: data.supervisor || 0 });
+    toast.promise(
+      fetch(getApiUrl(API_CONFIG.API_ENDPOINTS.ROLE_COUNTS), {
+        credentials: 'include'
       })
-      .catch(() => setUserCounts({ officer: 0, supervisor: 0 }));
+        .then(res => res.json())
+        .then(data => {
+          setUserCounts({ officer: data.officer || 0, supervisor: data.supervisor || 0 });
+        }),
+      {
+        loading: 'Memuat data...',
+        success: 'Data berhasil diambil!',
+        error: 'Gagal terhubung server, coba lagi.'
+      }
+    );
   }, []);
 
   const cards = [
@@ -30,7 +36,7 @@ export default function DashboardSuperadmin() {
   return (
     <div style={{display:'flex', minHeight:'100vh'}}>
       <Sidebar role="superadmin" sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(v => !v)} />
-      <div className="dashboard-container" style={{marginLeft: sidebarOpen ? 220 : 0, transition: 'margin-left 0.2s'}}>
+      <div className="dashboard-container" style={{marginLeft: 260, transition: 'margin-left 0.2s'}}>
         <h2 className="dashboard-title">Dashboard Superadmin</h2>
         <div className="dashboard-grid">
           {cards.map((card) => (

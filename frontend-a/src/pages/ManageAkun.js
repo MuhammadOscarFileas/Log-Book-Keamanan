@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import '../App.css';
 import Sidebar from '../Sidebar';
 import Swal from 'sweetalert2';
-
-const BASE_URL = "https://ad0d4e758a12.ngrok-free.app";
+import toast from 'react-hot-toast';
+import { getApiUrl, API_CONFIG } from '../config';
 
 function generatePassword() {
   const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -109,18 +109,26 @@ export default function ManageAkun() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/api/users`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        mode: 'cors',
-        credentials: 'include', // aktifkan jika backend butuh cookie/session
-      });
-      const data = await res.json();
-      //console.log('data dari backend : ', data);
-      setUsers(data);
-      setError('');
+      await toast.promise(
+        fetch(getApiUrl(API_CONFIG.API_ENDPOINTS.USERS), {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          mode: 'cors',
+          credentials: 'include',
+        })
+          .then(res => res.json())
+          .then(data => {
+            setUsers(data);
+            setError('');
+          }),
+        {
+          loading: 'Memuat data...',
+          success: 'Data berhasil diambil!',
+          error: 'Gagal terhubung server, coba lagi.'
+        }
+      );
     } catch (e) {
-      setError('Gagal memuat data user: ' + e.message);
+      setError('Gagal terhubung server, coba lagi.');
       console.error('Fetch error:', e);
     }
     setLoading(false);
@@ -135,8 +143,8 @@ export default function ManageAkun() {
     try {
       const res = await fetch(
         modal.user
-          ? `${BASE_URL}/api/users/${modal.user.user_id}`
-          : `${BASE_URL}/api/users/register`,
+          ? getApiUrl(`${API_CONFIG.API_ENDPOINTS.USERS}/${modal.user.user_id}`)
+          : getApiUrl(API_CONFIG.API_ENDPOINTS.USERS_REGISTER),
         {
           method: modal.user ? 'PUT' : 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -146,6 +154,19 @@ export default function ManageAkun() {
       if (!res.ok) throw new Error('Gagal simpan user');
       setModal({ open: false, user: null });
       fetchUsers();
+      if (modal.user) {
+        // Update user
+        await Swal.fire({
+          icon: 'success',
+          title: 'User berhasil diupdate',
+          showConfirmButton: false,
+          timer: 1200
+        });
+        toast.success('User berhasil diupdate');
+      } else {
+        // Tambah user
+        toast.success('User berhasil ditambahkan');
+      }
     } catch {
       alert('Gagal simpan user');
     }
@@ -155,12 +176,12 @@ export default function ManageAkun() {
   return (
     <div style={{display:'flex', minHeight:'100vh', background:'#f7fafd'}}>
       <Sidebar role="superadmin" />
-      <div className="dashboard-container">
+      <div className="dashboard-container" style={{marginLeft: 260, transition: 'margin-left 0.2s'}}>
         <h2 className="dashboard-title">Manage Akun</h2>
-        <button className="btn-primary" style={{marginBottom:16}} onClick={handleAdd}>+ Tambah User</button>
+        <button className="btn-primary" style={{marginBottom:16, marginLeft: 8}} onClick={handleAdd}>+ Tambah User</button>
         {/* Debug: tampilkan data users */}
         {loading ? <div>Loading...</div> : error ? <div className="error">{error}</div> : (
-          <div className="user-table-wrapper">
+          <div className="user-table-wrapper" style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 16px rgba(0,0,0,0.07)', maxWidth:1000, margin:'40px auto', padding:'32px 28px'}}>
             <table className="user-table">
               <thead>
                 <tr>

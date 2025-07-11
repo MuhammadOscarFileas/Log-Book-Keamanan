@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './App.css';
+import Swal from 'sweetalert2';
 
 export default function Sidebar({ role }) {
   const location = useLocation();
@@ -42,12 +43,12 @@ export default function Sidebar({ role }) {
 
   return (
     <>
-      <button className="sidebar-hamburger" onClick={() => setOpen(o => !o)} aria-label="Toggle menu">
+      <button className="sidebar-hamburger" onClick={() => setOpen(o => !o)} aria-label="Toggle menu" style={{zIndex:1002}}>
         <span className={open ? 'bar open' : 'bar'}></span>
         <span className={open ? 'bar open' : 'bar'}></span>
         <span className={open ? 'bar open' : 'bar'}></span>
       </button>
-      <nav className={`sidebar${open ? ' open' : ''}`}>
+      <nav className={`sidebar${open ? ' open' : ''}`} style={{zIndex:1001}}>
         <div className="sidebar-title">Menu</div>
         <div className="sidebar-greeting" style={{margin:'0 0 8px 0', fontWeight:600, color:'#3EC6DF', fontSize:'1.1em'}}>Halo, {namaLengkap}</div>
         <div style={{marginBottom:18}}>
@@ -63,9 +64,66 @@ export default function Sidebar({ role }) {
             </li>
           ))}
         </ul>
-        <button className="btn-logout" onClick={() => window.location.href = '/'}>Logout</button>
+        <button
+          className="btn-logout"
+          onClick={async () => {
+            const result = await Swal.fire({
+              title: 'Yakin ingin logout?',
+              text: 'Kamu akan keluar dari akun ini.',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Ya, Logout',
+              cancelButtonText: 'Batal',
+              reverseButtons: true
+            });
+            if (result.isConfirmed) {
+              localStorage.clear();
+              window.location.href = '/';
+            }
+          }}
+        >
+          Logout
+        </button>
       </nav>
-      {open && <div className="sidebar-overlay" onClick={() => setOpen(false)}></div>}
+      {open && <div className="sidebar-overlay" onClick={() => setOpen(false)} style={{zIndex:1000}}></div>}
+      <style>{`
+        @media (max-width: 900px) {
+          .sidebar {
+            width: 80vw !important;
+            min-width: 0 !important;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            position: fixed;
+            transition: left 0.2s;
+          }
+          .sidebar-hamburger {
+            display: block !important;
+            position: fixed;
+            left: 16px;
+            top: 16px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            z-index: 1002;
+          }
+          .sidebar-overlay {
+            position: fixed;
+            left: 0; top: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.18);
+            z-index: 1000;
+          }
+          .sidebar ul li {
+            font-size: 1.1em;
+            padding: 14px 0;
+          }
+        }
+        @media (max-width: 600px) {
+          .sidebar {
+            width: 95vw !important;
+          }
+        }
+      `}</style>
     </>
   );
 } 

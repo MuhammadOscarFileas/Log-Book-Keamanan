@@ -24,7 +24,7 @@ export const login = async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ error: "Invalid password" });
     const token = jwt.sign({ user_id: user.user_id, role: user.role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-    res.json({ token, user });
+    res.json({ token, user: user.toJSON() });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -32,7 +32,11 @@ export const login = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await UserModel.findAll();
+    const where = {};
+    if (req.query.role) {
+      where.role = req.query.role;
+    }
+    const users = await UserModel.findAll({ where });
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -86,5 +90,23 @@ export const getUserRoleCounts = async (req, res) => {
     res.json(counts);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+export const updatePasswordFirstLogin = async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password || password.length < 6) {
+      return res.status(400).json({ error: 'Password minimal 6 karakter' });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const [updated] = await UserModel.update(
+      { password: hashedPassword, first_login: false },
+      { where: { user_id: req.params.id } }
+    );
+    if (!updated) return res.status(404).json({ error: 'User not found' });
+    res.json({ message: 'Password updated, first_login set to false' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 }; 

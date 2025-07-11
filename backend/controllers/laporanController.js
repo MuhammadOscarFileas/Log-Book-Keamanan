@@ -1,4 +1,5 @@
 import LaporanModel from "../models/laporan_model.js";
+import { Op } from "sequelize";
 
 export const createLaporan = async (req, res) => {
   try {
@@ -42,6 +43,10 @@ export const updateLaporan = async (req, res) => {
         laporan.status !== "submit to supervisor"
       ) {
         laporan.status = "submit to supervisor";
+        // Update signature jika ada di body
+        if (req.body.ttd_pembuat) laporan.ttd_pembuat = req.body.ttd_pembuat;
+        if (req.body.ttd_penerima) laporan.ttd_penerima = req.body.ttd_penerima;
+        if (req.body.ttd_shift_selanjutnya) laporan.ttd_penerima = req.body.ttd_shift_selanjutnya;
         await laporan.save();
         return res.json({ message: "Laporan submitted to supervisor" });
       }
@@ -71,4 +76,39 @@ export const deleteLaporan = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-}; 
+};
+
+export const countPendingSupervisor = async (req, res) => {
+  try {
+    const jumlah = await LaporanModel.count({
+      where: {
+        [Op.or]: [
+          { status: 'submit to supervisor' },
+          { ttd_supervisor: null },
+          { ttd_supervisor: '' }, 
+        ],
+      },
+    });
+
+    res.json({ pending_supervisor: jumlah });
+  } catch (error) {
+    res.status(500).json({ message: "Gagal menghitung laporan", error: error.message });
+  }
+};
+
+export const getLaporanNonDraft = async (req, res) => {
+  try {
+    const laporan = await LaporanModel.findAll({
+      where: {
+        status: {
+          [Op.ne]: 'draft'
+        }
+      },
+      order: [['created_at', 'DESC']],
+    });
+
+    res.json(laporan);
+  } catch (error) {
+    res.status(500).json({ message: "Gagal mengambil laporan", error: error.message });
+  }
+};
