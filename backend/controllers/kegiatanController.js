@@ -58,4 +58,13 @@ export const deleteKegiatan = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+};
+
+export const getKegiatanByLaporan = async (req, res) => {
+  try {
+    const kegiatan = await KegiatanModel.findAll({ where: { laporan_id: req.params.laporan_id } });
+    res.json(kegiatan);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 }; 

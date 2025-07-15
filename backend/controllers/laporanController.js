@@ -34,6 +34,18 @@ export const updateLaporan = async (req, res) => {
     const laporan = await LaporanModel.findByPk(req.params.id);
     if (!laporan) return res.status(404).json({ error: "Laporan not found" });
 
+    // Supervisor menandatangani laporan
+    if (
+      laporan.status === "submit to supervisor" &&
+      req.body.status === "done" &&
+      req.body.ttd_supervisor
+    ) {
+      laporan.status = "done";
+      laporan.ttd_supervisor = req.body.ttd_supervisor;
+      await laporan.save();
+      return res.json({ message: "Laporan ditandatangani supervisor dan selesai" });
+    }
+
     // Jika status bukan draft, tolak edit kecuali hanya mengubah status ke 'submit to supervisor'
     if (laporan.status !== "draft") {
       // Izinkan update status ke 'submit to supervisor' saja

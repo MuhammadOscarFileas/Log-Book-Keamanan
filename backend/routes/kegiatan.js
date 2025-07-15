@@ -1,5 +1,5 @@
 import express from "express";
-import { createKegiatan, getAllKegiatan, getKegiatanById, updateKegiatan, deleteKegiatan } from "../controllers/kegiatanController.js";
+import { createKegiatan, getAllKegiatan, getKegiatanById, updateKegiatan, deleteKegiatan, getKegiatanByLaporan } from "../controllers/kegiatanController.js";
 import { verifyToken } from "../middleware/verifytoken.js";
 
 const router = express.Router();
@@ -12,6 +12,7 @@ const router = express.Router();
 
 router.post("/", createKegiatan);
 router.get("/", getAllKegiatan);
+router.get("/by-laporan/:laporan_id", getKegiatanByLaporan);
 router.get("/:id", getKegiatanById);
 router.put("/:id", updateKegiatan);
 router.delete("/:id", deleteKegiatan);

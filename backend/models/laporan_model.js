@@ -55,6 +55,7 @@ const LaporanModel = db.define("laporan", {
   timestamps: true,
   createdAt: "created_at",
   updatedAt: false,
+  freezeTableName: true,
 });
 
 export default LaporanModel;

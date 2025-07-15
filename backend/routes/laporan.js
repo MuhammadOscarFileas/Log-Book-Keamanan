@@ -14,7 +14,7 @@ router.post("/", createLaporan);
 router.get("/", getAllLaporan);
 router.get("/non-draft", getLaporanNonDraft);
 router.get("/:id", getLaporanById);
-router.patch("/:id", updateLaporan);
+router.put("/:id", updateLaporan);
 router.delete("/:id", deleteLaporan);
 
 export default router; 
