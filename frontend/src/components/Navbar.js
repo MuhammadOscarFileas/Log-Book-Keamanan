@@ -34,7 +34,7 @@ const Navbar = () => {
   } else if (user.role === 'superadmin') {
     links = [
       { to: '/dashboard/superadmin', label: 'Dashboard' },
-      { to: '/users', label: 'Kelola Akun' },
+      { to: '/dashboard/superadmin', label: 'Kelola Akun' },
     ];
   }
 
